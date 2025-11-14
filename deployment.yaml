@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: flask
-        image: johndoe/flask-hello:latest
+        image: mdmusfikurrahmansifar/flask-hello
         ports:
         - containerPort: 5000
         # imagePullPolicy: Never  # Use local image from kind load
