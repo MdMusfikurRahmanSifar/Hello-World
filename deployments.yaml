@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-hello
+  labels:
+    app: flask-hello
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-hello
+  template:
+    metadata:
+      labels:
+        app: flask-hello
+    spec:
+      containers:
+      - name: flask
+        image: johndoe/flask-hello:latest
+        ports:
+        - containerPort: 5000
+        # imagePullPolicy: Never  # Use local image from kind load
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-hello-service
+spec:
+  selector:
+    app: flask-hello
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
