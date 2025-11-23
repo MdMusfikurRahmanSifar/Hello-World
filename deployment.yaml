@@ -19,17 +19,19 @@ spec:
         image: mdmusfikurrahmansifar/flask-hello
         ports:
         - containerPort: 5000
-        # imagePullPolicy: Never  # Use local image from kind load
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: flask-hello-service
+  labels:
+    app: flask-hello
 spec:
   selector:
     app: flask-hello
   ports:
-    - protocol: TCP
+    - name: http            # <-- added
+      protocol: TCP
       port: 80
       targetPort: 5000
-  type: LoadBalancer
+  type: ClusterIP           # ← LoadBalancer not needed in kind
