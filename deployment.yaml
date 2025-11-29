@@ -26,6 +26,7 @@ metadata:
   name: flask-hello-service
   labels:
     app: flask-hello
+    release: kps          # <-- REQUIRED for Prometheus Operator
 spec:
   selector:
     app: flask-hello
