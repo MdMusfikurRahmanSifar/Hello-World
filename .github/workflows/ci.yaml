@@ -3,15 +3,21 @@ name: Build
 on:
   push:
     branches: [main]
-    paths-ignore:        # ← CRITICAL
+    paths-ignore:
       - 'deployment.yaml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write  # This is CRITICAL for git push
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Add this
       
       - name: Login to Docker
         uses: docker/login-action@v3
@@ -36,10 +42,12 @@ jobs:
           echo "=== AFTER ==="
           grep -n "image:" deployment.yaml
           echo "New image: ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }}"
+      
       - name: Commit back
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
+          git pull origin main --rebase
           git add deployment.yaml
           git commit -m "Update to ${{ env.VERSION }}"
           git push
