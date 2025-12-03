@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: flask
-        image: mdmusfikurrahmansifar/flask-hello:2025-12-03-173442
+        image: mdmusfikurrahmansifar/flask-hello:2025-12-03-194420
         ports:
         - containerPort: 5000
 ---
