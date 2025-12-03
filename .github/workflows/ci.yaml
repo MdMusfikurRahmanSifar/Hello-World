@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-      contents: write  # This is CRITICAL for git push
+      contents: write
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # Add this
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Login to Docker
         uses: docker/login-action@v3
@@ -34,20 +34,20 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }} .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }}
       
-      - name: Update deployment.yaml
+      - name: Update and commit deployment.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "=== BEFORE ==="
-          grep -n "image:" deployment.yaml
+          # Update the file
           sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }}|" deployment.yaml
-          echo "=== AFTER ==="
-          grep -n "image:" deployment.yaml
-          echo "New image: ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }}"
-      
-      - name: Commit back
-        run: |
+          
+          # Configure git
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-          git pull origin main --rebase
+          
+          # Add and commit
           git add deployment.yaml
           git commit -m "Update to ${{ env.VERSION }}"
-          git push
+          
+          # Push with force (since we know we want to overwrite)
+          git push https://x-access-token:$GITHUB_TOKEN@github.com/${{ github.repository }}.git HEAD:main
