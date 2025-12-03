@@ -25,17 +25,17 @@ jobs:
       
       - name: Build and push
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/flask-hello:${{ env.VERSION }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/flask-hello:${{ env.VERSION }}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }} .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }}
       
       - name: Update deployment.yaml
         run: |
           echo "=== BEFORE ==="
           grep -n "image:" deployment.yaml
-          sed -i "s|image:.*|image: ${{ secrets.DOCKER_USERNAME }}/flask-hello:${{ env.VERSION }}|" deployment.yaml
+          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }}|" deployment.yaml
           echo "=== AFTER ==="
           grep -n "image:" deployment.yaml
-          echo "New image: ${{ secrets.DOCKER_USERNAME }}/flask-hello:${{ env.VERSION }}"
+          echo "New image: ${{ secrets.DOCKERHUB_USERNAME }}/flask-hello:${{ env.VERSION }}"
       - name: Commit back
         run: |
           git config user.email "actions@github.com"
