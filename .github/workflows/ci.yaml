@@ -28,7 +28,7 @@ jobs:
       
       - name: Update deploy.yaml
         run: |
-          sed -i "s|image:.*|image: user/app:${{ env.VERSION }}|" deploy.yaml
+          sed -i "s|image:.*|image: user/app:${{ env.VERSION }}|" deployment.yaml
       
       - name: Commit back
         run: |
