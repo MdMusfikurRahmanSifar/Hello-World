@@ -3,6 +3,8 @@ name: Build
 on:
   push:
     branches: [master]
+    paths-ignore:        # ← CRITICAL
+      - 'deployment.yaml'
 
 jobs:
   build:
@@ -26,7 +28,7 @@ jobs:
           docker build -t user/app:${{ env.VERSION }} .
           docker push user/app:${{ env.VERSION }}
       
-      - name: Update deploy.yaml
+      - name: Update deployment.yaml
         run: |
           sed -i "s|image:.*|image: user/app:${{ env.VERSION }}|" deployment.yaml
       
@@ -34,6 +36,6 @@ jobs:
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-          git add deploy.yaml
-          git commit -m "Update to ${{ env.VERSION }} [skip ci]"  # ← THIS
+          git add deployment.yaml
+          git commit -m "Update to ${{ env.VERSION }}"
           git push
