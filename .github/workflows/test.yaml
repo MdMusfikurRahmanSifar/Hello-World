@@ -1,4 +1,4 @@
-name: Test Trigger
+name: Test Trigger Debug
 
 on:
   push:
@@ -9,32 +9,36 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Check if workflow runs
+      # MUST ADD THIS STEP FIRST!
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Get last 2 commits for diff
+          
+      - name: Debug info
         run: |
-          echo "✅ Workflow triggered successfully!"
+          echo "=== BASIC INFO ==="
+          echo "Workflow: ${{ github.workflow }}"
           echo "Event: ${{ github.event_name }}"
           echo "Ref: ${{ github.ref }}"
+          echo "Branch: ${{ github.ref_name }}"
           echo "SHA: ${{ github.sha }}"
+          echo "Repository: ${{ github.repository }}"
           
       - name: Show changed files
         run: |
-          echo "=== Changed files in this push ==="
-          # If checkout is not done, use GitHub API
-          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}" \
-            | jq -r '.files[].filename' || echo "Could not fetch changed files"
-            
-      - name: Print commit info
-        run: |
-          echo "=== Commit details ==="
-          git log -1 --oneline || echo "Not in git context yet"
+          echo "=== CHANGED FILES ==="
+          git log --oneline -2
+          echo "--- Files changed in last commit:"
+          git diff HEAD~1 HEAD --name-only
           
       - name: List workflow files
         run: |
-          echo "=== Workflow files ==="
+          echo "=== WORKFLOW FILES ==="
           ls -la .github/workflows/
+          echo "---"
+          echo "Listing all YAML files:"
+          find . -name "*.yml" -o -name "*.yaml" | sort
           
-      - name: Simple timestamp
-        run: |
-          echo "Workflow ran at: $(date)"
-          echo "Random number: $RANDOM"
+      - name: Success
+        run: echo "✅ Test completed! Workflow is triggering correctly."
