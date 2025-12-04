@@ -4,7 +4,7 @@ metadata:
   name: flask-hello-sm
   namespace: monitoring
   labels:
-    release: kps
+    release: prometheus
 spec:
   selector:
     matchLabels:
